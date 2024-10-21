@@ -79,5 +79,66 @@ public class EmployeeController {
         }
     }
 
+    @GetMapping(value = "/getAllEmployees")
+    public ResponseEntity getAllEmployees() {
+        try{
+            responseDTO.setCode(VarList.RSP_SUCCESS);
+            responseDTO.setMessage("All Employee Records Found");
+            responseDTO.setContent(employeeService.getAllEmployee());
+            return new ResponseEntity(responseDTO, HttpStatus.ACCEPTED);
+        }catch (Exception ex){
+            responseDTO.setCode(VarList.RSP_FAIL);
+            responseDTO.setMessage(ex.getMessage());
+            responseDTO.setContent(null);
+            return new ResponseEntity(responseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(value = "/searchEmployeeById/{employeeId}")
+    public ResponseEntity searchEmployeeById(@PathVariable int employeeId) {
+        try{
+            EmployeeDTO employeeDTO = employeeService.searchEmployeeById(employeeId);
+           if(employeeDTO != null){
+               responseDTO.setCode(VarList.RSP_SUCCESS);
+               responseDTO.setMessage("Employee Record Found Successfully");
+               responseDTO.setContent(employeeDTO);
+               return new ResponseEntity(responseDTO, HttpStatus.ACCEPTED);
+           }else{
+               responseDTO.setCode(VarList.RSP_NO_DATA_FOUND);
+               responseDTO.setMessage("No Employee Record Found");
+               responseDTO.setContent(employeeDTO);
+               return new ResponseEntity(responseDTO, HttpStatus.BAD_REQUEST);
+           }
+        }catch (Exception ex){
+            responseDTO.setCode(VarList.RSP_FAIL);
+            responseDTO.setMessage(ex.getMessage());
+            responseDTO.setContent(null);
+            return new ResponseEntity(responseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping(value = "/deleteEmployeeById/{employeeId}")
+    public ResponseEntity deleteEmployeeById(@PathVariable int employeeId) {
+        try{
+            Boolean rsp = employeeService.deleteEmployeeById(employeeId);
+            if(rsp == true){
+                responseDTO.setCode(VarList.RSP_SUCCESS);
+                responseDTO.setMessage("Employee Record Deleted Successfully");
+                responseDTO.setContent(null);
+                return new ResponseEntity(responseDTO, HttpStatus.ACCEPTED);
+            }else{
+                responseDTO.setCode(VarList.RSP_NO_DATA_FOUND);
+                responseDTO.setMessage("No Employee Record Found");
+                responseDTO.setContent(null);
+                return new ResponseEntity(responseDTO, HttpStatus.BAD_REQUEST);
+            }
+        }catch (Exception ex){
+            responseDTO.setCode(VarList.RSP_FAIL);
+            responseDTO.setMessage(ex.getMessage());
+            responseDTO.setContent(null);
+            return new ResponseEntity(responseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
 }
