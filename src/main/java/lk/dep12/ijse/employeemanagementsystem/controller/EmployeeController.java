@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "api/v1/employee")
@@ -27,7 +24,7 @@ public class EmployeeController {
     private EmployeeRepo employeeRepo;
 
     @PostMapping(value = "/saveEmployee")
-    public ResponseEntity save(@RequestBody EmployeeDTO employeeDTO) {
+    public ResponseEntity saveEmployee(@RequestBody EmployeeDTO employeeDTO) {
         try{
            String rsp = employeeService.saveEmployee(employeeDTO);
            if (rsp.equals("00")){
@@ -39,18 +36,46 @@ public class EmployeeController {
                responseDTO.setCode(VarList.RSP_DUPLICATED);
                responseDTO.setMessage("Employee Already Exists");
                responseDTO.setContent(employeeDTO);
-               return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+               return new ResponseEntity(responseDTO, HttpStatus.BAD_REQUEST);
            }else{
                responseDTO.setCode(VarList.RSP_FAIL);
                responseDTO.setMessage("New Employee Record Adding Failed");
                responseDTO.setContent(null);
-               return new ResponseEntity<>(responseDTO, HttpStatus.BAD_REQUEST);
+               return new ResponseEntity(responseDTO, HttpStatus.BAD_REQUEST);
            }
         }catch(Exception ex){
             responseDTO.setCode(VarList.RSP_FAIL);
             responseDTO.setMessage(ex.getMessage());
             responseDTO.setContent(null);
-            return new ResponseEntity<>(responseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity(responseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping(value = "/updateEmployee")
+    public ResponseEntity updateEmployee(@RequestBody EmployeeDTO employeeDTO) {
+        try{
+            String rsp = employeeService.updateEmployee(employeeDTO);
+            if (rsp.equals("00")){
+                responseDTO.setCode(VarList.RSP_SUCCESS);
+                responseDTO.setMessage("Employee Record Updated Successfully");
+                responseDTO.setContent(employeeDTO);
+                return new ResponseEntity(responseDTO, HttpStatus.ACCEPTED);
+            }else if (rsp.equals("01")){
+                responseDTO.setCode(VarList.RSP_NO_DATA_FOUND);
+                responseDTO.setMessage("No Employee Record Found");
+                responseDTO.setContent(employeeDTO);
+                return new ResponseEntity(responseDTO, HttpStatus.BAD_REQUEST);
+            }else{
+                responseDTO.setCode(VarList.RSP_FAIL);
+                responseDTO.setMessage("Employee Record Update Failed");
+                responseDTO.setContent(null);
+                return new ResponseEntity(responseDTO, HttpStatus.BAD_REQUEST);
+            }
+        }catch(Exception ex){
+            responseDTO.setCode(VarList.RSP_FAIL);
+            responseDTO.setMessage(ex.getMessage());
+            responseDTO.setContent(null);
+            return new ResponseEntity(responseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
